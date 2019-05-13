@@ -62,6 +62,7 @@ def Inverse(a, m) :
 def CRT(a, m, k) :
     M = Multiply_all(m)
     T = [(M//m[i]) * Inverse(M//m[i], m[i]) * a[i] for i in range(k)]
+    print(T)
     x = sum(T)%M
     return x
 

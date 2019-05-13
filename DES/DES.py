@@ -95,9 +95,9 @@ def main() :
     p = DES_decrypt(hextob(c), hextob('0123456789ABCDEF'))
     print(p)
 
-    c = DES_encrypt(hextob('0123456789ABCDEF'), hextob('0123456789ABCDEF'), time = 3)
+    c = DES_encrypt(hextob('748502CD38451097'), hextob('1A624C88520CEC46'), time = 3)
     print(c)
-    p = DES_decrypt(hextob(c), hextob('0123456789ABCDEF'), time = 3)
+    p = DES_decrypt(hextob(c), hextob('1A624C88520CEC46'), time = 3)
     print(p)
     
 if __name__ == '__main__':
