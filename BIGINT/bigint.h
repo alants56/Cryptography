@@ -13,6 +13,7 @@
 #define NEGATIVE 0
 
 #define BASE 16
+#define BASE_BITLEN 4
 
 typedef char  base_type;
 
@@ -35,19 +36,21 @@ bigint  pow_bigint(bigint, int);
 bigint  pow_m_bigint(bigint l, bigint r, bigint m);
 
 bigint  random_bigint_n(int n);
-bigint  random_bigint(bigint l, bigint r);
+bigint  random_bigint(bigint, bigint);
 
-void  div_mod_bigint(bigint *a, bigint *r, bigint *b, bigint *l);
-void s_left(bigint *, int );
-void div_2(bigint *);
+void  div_mod_bigint(bigint*, bigint*, bigint*, bigint*);
+void s_left(bigint*, int);
+int get_bitlen(bigint* );
+void lshift(bigint* , int);
+void div_2(bigint*);
+void add_bigint_1(bigint*);
 
 int is_equal(bigint, bigint);
 int is_less(bigint, bigint);
 int is_greater(bigint, bigint);
 
-bigint  string_to_bigint(char *);
-void bigint_to_string(bigint, char *);
+bigint  string_to_bigint(char*);
+void bigint_to_string(bigint, char*);
 void output_bigint(bigint t);
-
 
 #endif

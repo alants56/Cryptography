@@ -206,6 +206,7 @@ static inline bigint  __sub_bigint(bigint l, bigint r)
     return b;
 }
 
+
 static inline bigint  __mut_bigint(bigint l, bigint r)
 {
     bigint b;
@@ -217,17 +218,20 @@ static inline bigint  __mut_bigint(bigint l, bigint r)
         int tmp = 0;
         for (j = 0; j < l.len; ++j) {
             tmp = b.data[i+j] + flag + r.data[i] * l.data[j];
-            flag = (tmp)/BASE;
+            flag = (tmp/BASE);
             b.data[i+j] = (tmp)%BASE;
         }
         tmp = b.data[i+j] + flag;
-        b.data[i+j] = (tmp)%BASE;
-        flag = (tmp)/BASE;
+        b.data[i+j] = (tmp%BASE);
+        flag = (tmp/BASE);
     }
 
     b.len = get_bigint_len(b.data, b.len);
     return b;
 }
+
+
+
 
 
 
@@ -244,8 +248,20 @@ bigint  pow_bigint(bigint x, int n)
     return d;
 }
 
+void add_bigint_1(bigint * b)
+{
+    base_type flag = 1;
+    base_type tmp = 0;
+    for (int i = 0; i < b->len; ++i) {
+        tmp = flag + b->data[i];
+        flag = (tmp/BASE);
+        b->data[i] = tmp%BASE;
+    }
 
-
+    if (flag == 1) {
+        b->data[b->len++] = flag;
+    }
+}
 
 
 bigint  add_bigint(bigint l, bigint r)
@@ -309,21 +325,8 @@ bigint  sub_bigint(bigint l, bigint r)
 bigint  mut_bigint(bigint l, bigint r)
 {
     bigint b;
-    int ch = check_s(l.flag, r.flag);
-
-    switch (ch) {
-    case 0:
-    case 3:
-    default:
-        b = __mut_bigint(l, r);
-        b.flag = POSITIVE;
-        break;
-    case 1:
-    case 2:
-        b = __mut_bigint(l, r);
-        b.flag = NEGATIVE;
-        break;
-    }
+    b = __mut_bigint(l, r);
+    b.flag = !(l.flag^r.flag);
     return b;
 }
 
@@ -368,7 +371,47 @@ void  div_mod_bigint(bigint *a, bigint *r, bigint *b, bigint *l)
     }
 }
 
+static inline int get_bitlen_basetype(base_type b)
+{
+    int len = 0;
+    while (b != 0) {
+        b = b>>1;
+        ++len;
+    }
+    return len;
+}
 
+int get_bitlen(bigint* d)
+{
+    return (get_bitlen_basetype(d->data[d->len - 1]) + (d->len - 1) * BASE_BITLEN);
+}
+
+
+void lshift(bigint* d, int n)
+{
+    if (!n) {
+        return;
+    }
+
+    int len = n/BASE_BITLEN;
+    int bitlen = n%BASE_BITLEN;
+    int tmp = 0;
+    int flag = 0;
+
+    for (int i = 0; i < d->len; ++i) {
+        tmp = (d->data[d->len - i - 1] << bitlen);
+        d->data[d->len + len - i] = tmp / BASE + flag;
+        flag =  tmp % BASE;
+    }
+
+    d->data[len] = flag;
+
+    for (int i = 0; i < len; ++i) {
+        d->data[i] = 0;
+    }
+    d->len += len+1;
+    d->len = get_bigint_len(d->data, d->len);
+}
 
 
 void s_left(bigint *a, int n)
@@ -404,25 +447,21 @@ bigint  div_bigint(bigint l, bigint r)
 }
 
 
-
-
-
 bigint  mod_bigint(bigint l, bigint r)
 {
     while (!is_less(l,r)) {
-        if (l.len - r.len > 1) {
+        int n = get_bitlen(&l) - get_bitlen(&r) - 1;
+        if (n > 0) {
             bigint c = r;
-            s_left(&c, l.len - r.len - 1);
-            while (!is_less(l, c)) {
-                l = sub_bigint(l,c);
-            }
+            lshift(&c, n);
+            l = sub_bigint(l,c);
         } else {
             l = sub_bigint(l,r);
         }
-
     }
     return l;
 }
+
 
 bigint  pow_m_bigint(bigint x, bigint n, bigint m)
 {

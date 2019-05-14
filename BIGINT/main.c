@@ -18,9 +18,9 @@ void test_add()
 
 void test_mut()
 {
-    printf("mut : 517608181126615635485045030823374602335 * 17608181126615635485045030823374602335\n");
-    bigint a = string_to_bigint("517608181126615635485045030823374602335");
-    bigint b = string_to_bigint("17608181126615635485045030823374602335");
+    printf("mut : FFFFFFFFFFFFFFFFFFFFFFFF * FFFFFFFFFFFFFFFFFFFFFFFF\n");
+    bigint a = string_to_bigint("FFFFFFFFFFFFFFFFFFFFFFFF");
+    bigint b = string_to_bigint("FFFFFFFFFFFFFFFFFFFFFFFF");
     bigint c = mut_bigint(a,b);
     output_bigint(c);
     printf("\n\n");
@@ -261,7 +261,7 @@ int miller_rabin(bigint n, int t)
         if (is_equal(a, ONE)) {
             flag = 1;
         }
-        for (bigint j = ZERO; is_less(j, k); j = add_bigint(j, ONE)) {
+        for (bigint j = ZERO; is_less(j, k); add_bigint_1(&j)) {
             if (is_equal(a, n_1)) {
                 flag = 1;
                 break;
@@ -375,10 +375,31 @@ void test_div2()
     printf("\n\n");
 }
 
+void test_add_1()
+{
+    bigint n = string_to_bigint("FFF");
+    for (bigint j = ONE; is_less(j,n); add_bigint_1(&j) ) {
+        output_bigint(j);
+    }
+}
+
+void test_lshift()
+{
+    for (int i = 0; i < 16; ++i) {
+        bigint n = string_to_bigint("FFF");
+        lshift(&n, i);
+        printf("%d :", get_bitlen(&n));
+        output_bigint(n);
+
+    }
+
+}
+
 int main()
 {
     clock_t start, end;
     start = clock();
+    //test_lshift();
 
     test_const();
     test_add();
